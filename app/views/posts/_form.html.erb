@@ -15,17 +15,14 @@
     <%= f.label :title %><br>
     <%= f.text_field :title %>
   </div>
-  <form>
-    <textarea class="js-st-instance"></textarea>
-  </form>
-  <script>
-    new SirTrevor.Editor({ el: $('.js-st-instance') });
-  </script>
   <div class="field">
     <%= f.label :body %><br>
-    <%= f.text_field :body %>
+    <%= f.text_area :body, class: 'js-st-instance' %>
   </div>
   <div class="actions">
     <%= f.submit %>
   </div>
 <% end %>
+<script>
+  new SirTrevor.Editor({ el: $('.js-st-instance') });
+</script>
