@@ -27,3 +27,7 @@ gem 'sdoc', '~> 0.4.0',          group: :doc
 gem 'spring',        group: :development
 
 gem 'bower-rails', '~> 0.7.1'
+
+gem "carrierwave"
+gem "mini_magick", "~> 3.3"
+gem "fog", "~> 1.3.1"
