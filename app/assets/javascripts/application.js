@@ -10,7 +10,10 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
+//= require underscore/underscore
+//= require Eventable/eventable
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
+//= require sir-trevor-js/sir-trevor
 //= require_tree .

@@ -11,5 +11,7 @@
  * file per style scope.
  *
  *= require_tree .
+ *= require sir-trevor-js/sir-trevor
+ *= require sir-trevor-js/sir-trevor-icons
  *= require_self
  */
