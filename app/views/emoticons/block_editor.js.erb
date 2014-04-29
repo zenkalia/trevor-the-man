@@ -1,6 +1,7 @@
 /**
- * Created by daniel on 4/28/14.
- */
+* Created by daniel on 4/28/14.
+*/
+$(function() { console.log("I'm doing something!");});
 SirTrevor.Blocks.Emoji = (function(){
 
   return SirTrevor.Block.extend({
@@ -81,11 +82,11 @@ SirTrevor.Blocks.Emoji = (function(){
       var template = "";
       template += "<select>";
       <% @emoticons.each do |emoticon| %>
-        template += "<option value='<%= emoticon.value %>'><%= emoticon.name %></option>"
+        template += "<option value='<%= emoticon.emoji %>'><%= emoticon.name %></option>";
       <% end %>
       template += "</select>";
-      template += <div class='st-text-block'></div>
-      return "<select><option>Hello!</option></select><div class='st-text-block'></div>";
+      template += "<div class='st-text-block'></div>";
+      return template;
     },
 
     // Element shorthands
