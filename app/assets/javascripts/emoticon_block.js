@@ -3,9 +3,8 @@
  */
 
 //AJAX call to retrieve available emoticons.
-var emoji_options = [];
-emoji_options.push("<option></option>");
-var isEmoticonsLoaded = false;
+var emoji_options = ["<option></option>"];
+var isEmojiLoaded = false;
 $.ajax(
     {
         url: "/emoticons",
@@ -14,16 +13,11 @@ $.ajax(
             $.each(data, function(index, value) {
                 emoji_options.push("<option value='"+value.emoji+ "'>" + value.name + "</option>");
             });
-            isEmoticonsLoaded = true;
+            $("select").trigger("emojiLoad");
+            isEmojiLoaded = true;
         }
     }
 );
-
-function doAThing() {
-    if (isEmoticonsLoaded) {
-        clearInterval(intervalId);
-    }
-}
 
 SirTrevor.Blocks.Emoji = (function(){
 
@@ -139,15 +133,11 @@ SirTrevor.Blocks.Emoji = (function(){
         loadData: function(data){
             var htmlText = SirTrevor.toHTML(data.text);
             this.getTextBlock().html(SirTrevor.toHTML(htmlText, this.type));
-            var block = this;
-            //Wait until emoticons loaded before
-            if (!isEmoticonsLoaded) {
-                var intervalId = setInterval(function(){
-                    if (isEmoticonsLoaded) {
-                        clearInterval(intervalId);
-                        block.$el.find("select").html(emoji_options.join("")).val(htmlText);
-                    }
-                }, 500);
+            if (isEmojiLoaded) {
+                this.$el.find("select").each(function(index) { setEmojiSelect(this, htmlText); });
+            }
+            else {
+                this.$el.find("select").on("emojiLoad", function(event) { setEmojiSelect(this, htmlText); });
             }
         },
 
@@ -232,3 +222,7 @@ SirTrevor.Blocks.Emoji = (function(){
     });
 
 })();
+
+function setEmojiSelect(element, htmlText) {
+    $(element).html(emoji_options.join("")).val(htmlText);
+}
