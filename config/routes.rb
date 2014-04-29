@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   resources :posts
-  resources :emoticons, only: [:block_editor] do
+  resources :emoticons, only: [:index, :block_editor] do
     get :block_editor, on: :collection
   end
 
