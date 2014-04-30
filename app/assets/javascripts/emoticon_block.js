@@ -2,24 +2,35 @@
  * Created by daniel on 4/29/14.
  */
 
-//AJAX call to retrieve available emoticons.
-var emoji_options = ["<option></option>"];
-var isEmojiLoaded = false;
-$.ajax(
-    {
-        url: "/emoticons",
-        dataType: "json",
-        success:     function(data, status, jqXHR) {
-            $.each(data, function(index, value) {
-                emoji_options.push("<option value='"+value.emoji+ "'>" + value.name + "</option>");
-            });
-            $("select").trigger("emojiLoad");
-            isEmojiLoaded = true;
-        }
-    }
-);
+SirTrevor.BlockControl.prototype.render = function() {
+    this.$el.html('<span class="st-icon st-icon-'+ _.result(this.block_type, "type") + '">'+ _.result(this.block_type, 'icon_name') +'</span>' + _.result(this.block_type, 'title'));
+    return this;
+};
 
 SirTrevor.Blocks.Emoji = (function(){
+    //Private properties
+    var emoji_options = ["<option></option>"];
+    var isEmojiLoaded = false;
+
+    //AJAX call to retrieve available emoticons.
+    $.ajax(
+        {
+            url: "/emoticons",
+            dataType: "json",
+            success:     function(data, status, jqXHR) {
+                $.each(data, function(index, value) {
+                    emoji_options.push("<option value='"+value.emoji+ "'>" + value.name + "</option>");
+                });
+                $("select.emoji_picker").trigger("emojiLoad");
+                isEmojiLoaded = true;
+            }
+        }
+    );
+
+    //Private methods
+    function setEmojiSelect(element, htmlText) {
+        $(element).html(emoji_options.join("")).val(htmlText);
+    }
 
     return SirTrevor.Block.extend({
 
@@ -96,7 +107,7 @@ SirTrevor.Blocks.Emoji = (function(){
         // st-text-block – gives the block the ability to use the formatting controls
 
         editorHTML: function() {
-            return "<select>" + emoji_options.join("") + "</select><div class='st-text-block'></div>";
+            return "<select class='emoji_picker'>" + emoji_options.join("") + "</select><div class='st-text-block'></div>";
         },
 
         // Element shorthands
@@ -174,7 +185,7 @@ SirTrevor.Blocks.Emoji = (function(){
         // In this example we add an extra button, just because.
         onBlockRender: function() {
             var block = this;
-            this.$el.find("select").change(function() {
+            this.$el.find("select.emoji_picker").change(function() {
                block.getTextBlock().html($(this).val())
             });
         },
@@ -223,6 +234,3 @@ SirTrevor.Blocks.Emoji = (function(){
 
 })();
 
-function setEmojiSelect(element, htmlText) {
-    $(element).html(emoji_options.join("")).val(htmlText);
-}
