@@ -2,97 +2,43 @@
  * Created by daniel on 4/29/14.
  */
 
-SirTrevor.Blocks.Emoji = (function(){
+SirTrevor.Blocks.SelectionResponse = (function(){
     //Private properties
-    var emoji_options = ["<option></option>"];
-    var isEmojiLoaded = false;
+    var addButtonName="Add Choice"
+    var addButtonId="addChoiceButton"
+    var choiceTextFieldName="addChoice"
 
-    //AJAX call to retrieve available emoticons.
-    $.ajax(
+    function getMaxChoiceSelect(maxChoices)  {
+        var maxChoiceSelect="<select class='emoji_picker'>"
+        for (var i=1;i<=maxChoices;i++)
         {
-            url: "/emoticons",
-            dataType: "json",
-            success:     function(data, status, jqXHR) {
-                $.each(data, function(index, value) {
-                    emoji_options.push("<option value='"+value.emoji+ "'>" + value.name + "</option>");
-                });
-                $("select.emoji_picker").trigger("emojiLoad");
-                isEmojiLoaded = true;
-            }
+            maxChoiceSelect += "<option value='"+i+ "'>" + i + "</option>"
         }
-    );
-
-    //Private methods
-    function setEmojiSelect(element, htmlText) {
-        $(element).html(emoji_options.join("")).val(htmlText);
+        maxChoiceSelect +="</select>"
+        return maxChoiceSelect;
     }
 
+     function getChoicesDiv( ){
+
+        return "<ul id='sortable'></ul> <div id='adder'><input id='add1' type='text' name='"+choiceTextFieldName+"' />" +
+            "<p /><input id='"+addButtonId+"' type='button' value='"+addButtonName+"' /></div>"
+     }
     return SirTrevor.Block.extend({
 
         // String; Names the block
         // Note – please use underscores when naming
         // Eg example_block should be ExampleBlock
-        type: 'emoji',
+        type: 'selection_response',
 
         // Function; the title displayed in the toolbar
         // Can return a translated string (if required)
         title: function() {
             // return i18n.t('blocks:example:title');
-            return "Emoji";
+            return "Selection Response";
         },
 
         // Boolean; show this blockType of the toolbar
         toolbarEnabled: true,
-
-        // Block Mixins
-        // Allow different UI components / methods to be mixed into the block
-
-        // Enable drop functionality on the block
-        droppable: false,
-
-        // Enable paste functionality (to paste URLS etc)
-        pastable: false,
-
-        // Enable an upload button to be added
-        // Mixins Ajaxable automatically
-        // Exposes an uploader method
-        // Usage: this.uploader(file, success, failure)
-        uploadable: false,
-
-        // Enable queued remote fetching
-        // Exposes a small wrapper around the $.ajax method
-        // Usage: this.fetch(ajaxOptions, success, failure)
-        fetchable: true,
-
-        // Add an ajax queue to the block
-        // Added to uploadable & fetchable automatically
-        ajaxable: true,
-
-        // Overwritable mixin options:
-        // --
-        drop_options: {
-            // String; (can use underscore template tags)
-            // Defines the HTML for the dropzone template
-            html: "<div class='st-block__dropzone'></div>",
-            // Boolean;
-            // On re-order, should we re-render this item.
-            // Useful for when re-ordering iframes (like Twitter)
-            re_render_on_reorder: false
-        },
-
-        paste_options: {
-            // String; (can use underscore template tags)
-            // Defines the HTML for the paste template
-            html: "<input type=\"text\" class=\"st-paste-block\">"
-        },
-
-        upload_options: {
-            // String; (can use underscore template tags)
-            // Defines the HTML for the upload template
-            html: "<input type=\"file\" type=\"st-file-upload\">"
-        },
-
-        formattable: true,
 
         // String or Function; The HTML for the inner portion of the editor block
         // In this example, the editorHTML is an editable input div (like we use for a TextBlock)
@@ -102,7 +48,7 @@ SirTrevor.Blocks.Emoji = (function(){
         // st-text-block – gives the block the ability to use the formatting controls
 
         editorHTML: function() {
-            return "<select class='emoji_picker'>" + emoji_options.join("") + "</select><div class='st-text-block'></div>";
+            return getMaxChoiceSelect(5)+ getChoicesDiv();
         },
 
         // Element shorthands
@@ -139,12 +85,7 @@ SirTrevor.Blocks.Emoji = (function(){
         loadData: function(data){
             var htmlText = SirTrevor.toHTML(data.text);
             this.getTextBlock().html(SirTrevor.toHTML(htmlText, this.type));
-            if (isEmojiLoaded) {
-                this.$el.find("select").each(function(index) { setEmojiSelect(this, htmlText); });
-            }
-            else {
-                this.$el.find("select").on("emojiLoad", function(event) { setEmojiSelect(this, htmlText); });
-            }
+
         },
 
         // Function; Executed on save of the block, once the block is validated
@@ -154,12 +95,12 @@ SirTrevor.Blocks.Emoji = (function(){
         toData: function(){
             var dataObj = {};
 
-            var content = this.getTextBlock().html();
-            if (content.length > 0) {
-                dataObj.text = SirTrevor.toMarkdown(content, this.type);
-            }
-
-            this.setData(dataObj);
+//            var content = this.getTextBlock().html();
+//            if (content.length > 0) {
+//                dataObj.text = SirTrevor.toMarkdown(content, this.type);
+//            }
+//
+//            this.setData(dataObj);
         },
 
         // Function; Returns true or false whether there is data in the block
@@ -179,11 +120,29 @@ SirTrevor.Blocks.Emoji = (function(){
         // Useful for initialising extra pieces of UI or binding extra events.
         // In this example we add an extra button, just because.
         onBlockRender: function() {
-            var block = this;
-            this.$el.find("select.emoji_picker").change(function() {
-               block.getTextBlock().html($(this).val())
+            this.$('#sortable').sortable();
+            this.$("input[name='"+choiceTextFieldName+"']").keypress(function(event){
+                if(event.keyCode == 13){
+                    event.preventDefault();
+                    $("#"+addButtonId).click();
+                }
             });
+            alert(this.$('.ui-state-default'));
+//            this.$('.ui-state-default li').click(function(e) {
+//                e.preventDefault();
+//                alert( "Handler for  called." );
+//            });
+            this.$('#'+addButtonId).click(function (e) {
+                e.preventDefault();
+                var choiceTextEl = $("input[name='"+choiceTextFieldName+"']");
+                var $li = $("<li class='ui-state-default'/>").text(choiceTextEl.val());
+                $("#sortable").append($li);
+                $("#sortable").sortable('refresh');
+                choiceTextEl.val("").focus()
+            });
+
         },
+
 
         // Function; Optional hook method executed before the rendering of a block
         // Beware, $el and any shorthand element variables won't be setup here.
@@ -228,4 +187,5 @@ SirTrevor.Blocks.Emoji = (function(){
     });
 
 })();
+
 
