@@ -120,25 +120,25 @@ SirTrevor.Blocks.SelectionResponse = (function(){
         // Useful for initialising extra pieces of UI or binding extra events.
         // In this example we add an extra button, just because.
         onBlockRender: function() {
-            this.$('#sortable').sortable();
+//            this.$('#sortable').sortable();
             this.$("input[name='"+choiceTextFieldName+"']").keypress(function(event){
                 if(event.keyCode == 13){
                     event.preventDefault();
                     $("#"+addButtonId).click();
                 }
             });
-            alert(this.$('.ui-state-default'));
-//            this.$('.ui-state-default li').click(function(e) {
-//                e.preventDefault();
-//                alert( "Handler for  called." );
-//            });
+
             this.$('#'+addButtonId).click(function (e) {
                 e.preventDefault();
                 var choiceTextEl = $("input[name='"+choiceTextFieldName+"']");
-                var $li = $("<li class='ui-state-default'/>").text(choiceTextEl.val());
+                var $li = $("<li class='ui-state-default'/>").
+                    html("<input type='button' value='Delete' />" +choiceTextEl.val());
                 $("#sortable").append($li);
-                $("#sortable").sortable('refresh');
-                choiceTextEl.val("").focus()
+                $li.find("input").click(function() {
+                   $(this).parent('li').remove();
+                });
+//                $("#sortable").sortable('refresh');
+                choiceTextEl.val("").focus()   ;
             });
 
         },
